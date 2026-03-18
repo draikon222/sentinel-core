@@ -1,0 +1,8 @@
+{
+  "name": "sentinel-core",
+  "version": "1.0.0",
+  "dependencies": {
+    "openai": "^4.28.0",
+    "@solana/web3.js": "^1.90.0"
+  }
+}
