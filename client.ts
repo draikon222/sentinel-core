@@ -3,32 +3,25 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import http from "http";
 
 const SOLANA_CONNECTION = new Connection("https://api.mainnet-beta.solana.com");
-const MY_WALLET = new PublicKey("J5MxnGsFa79EeQS6kAMcGLTK3kXXvC39TjEhj7BkD6bk");const SOLANA_CONNECTION = new Connection("https://api.mainnet-beta.solana.com");
 const MY_WALLET = new PublicKey("J5MxnGsFa79EeQS6kAMcGLTK3kXXvC39TjEhj7BkD6bk");
+const REQUIRED_AMOUNT = 0.15;
 
-// --- COPIAZĂ ȘI PUNE ASTA AICI ---
+const baseOpenai = new OpenAI({
+    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+});
+
 async function testWallet() {
     try {
         const signatures = await SOLANA_CONNECTION.getSignaturesForAddress(MY_WALLET, { limit: 1 });
         console.log("-----------------------------------------");
-        console.log("TEST PORTOFEL: Conexiune activă.");
-        console.log("Botul scanează adresa: " + MY_WALLET.toBase58());
-        console.log("Tranzacții găsite: " + signatures.length);
+        console.log("TEST PORTOFEL: Conexiune activa!");
+        console.log("Botul scaneaza adresa: " + MY_WALLET.toBase58());
         console.log("-----------------------------------------");
     } catch (err) {
         console.log("EROARE TEST: " + err);
     }
 }
 testWallet();
-// ---------------------------------
-
-const REQUIRED_AMOUNT = 0.15;
-
-const REQUIRED_AMOUNT = 0.15;
-
-const baseOpenai = new OpenAI({
-    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-});
 
 export const openai = {
     chat: {
