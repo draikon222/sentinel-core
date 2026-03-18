@@ -3,7 +3,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import http from "http";
 
 const SOLANA_CONNECTION = new Connection("https://api.mainnet-beta.solana.com");
-const MY_WALLET = new PublicKey("J5MxnG7Z66yS1S7G6X58661zN532V835n8474937");
+const MY_WALLET = new PublicKey("J5MxnGsFa79EeQS6kAMcGLTK3kXXvC39TjEhj7BkD6bk");
 const REQUIRED_AMOUNT = 0.15;
 
 const baseOpenai = new OpenAI({
