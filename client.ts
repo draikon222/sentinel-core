@@ -1,18 +1,45 @@
+import OpenAI from "openai";
+import { Connection, PublicKey } from "@solana/web3.js";
+import http from "http";
 
-{
-  "name": "sentinel-core",
-  "version": "1.0.0",
-  "description": "Sentinel Core Vama SOL",
-  "main": "client.ts",
-  "scripts": {
-    "start": "ts-node client.ts",
-    "build": "npm install"
-  },
-  "dependencies": {
-    "@solana/web3.js": "^1.91.1",
-    "openai": "^4.28.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "@types/node": "^20.11.24"
-  }
-}
+const SOLANA_CONNECTION = new Connection("https://api.mainnet-beta.solana.com");
+const MY_WALLET = new PublicKey("J5MxnG7Z66yS1S7G6... (pune adresa ta intreaga aici)");
+const REQUIRED_AMOUNT = 0.15;
+
+const baseOpenai = new OpenAI({
+    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+});
+
+export const openai = {
+    chat: {
+        completions: {
+            create: async (params: any): Promise<any> => {
+                const signatures = await SOLANA_CONNECTION.getSignaturesForAddress(MY_WALLET, { limit: 10 });
+                let paid = false;
+
+                for (const sig of signatures) {
+                    const tx = await SOLANA_CONNECTION.getTransaction(sig.signature, {
+                        commitment: "confirmed",
+                        maxSupportedTransactionVersion: 0
+                    });
+                    if (tx && (tx.meta?.postBalances[1]! - tx.meta?.preBalances[1]!) / 1e9 >= REQUIRED_AMOUNT) {
+                        paid = true;
+                        break;
+                    }
+                }
+
+                if (!paid) {
+                    throw new Error("ACCESS_DENIED");
+                }
+
+                return baseOpenai.chat.completions.create(params);
+            }
+        }
+    }
+};
+
+http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end("Astra-Prime is LIVE");
+}).listen(process.env.PORT || 3000);
+
