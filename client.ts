@@ -3,7 +3,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import http from "http";
 
 const SOLANA_CONNECTION = new Connection("https://api.mainnet-beta.solana.com");
-const MY_WALLET = new PublicKey("J5MxnG7Z66yS1S7G6X58661zN532V835n8474937"); 
+const MY_WALLET = new PublicKey("J5MxnG7Z66yS1S7G6X58661zN532V835n8474937");
 const REQUIRED_AMOUNT = 0.15;
 
 const baseOpenai = new OpenAI({
@@ -33,7 +33,9 @@ export const openai = {
     }
 };
 
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
     res.writeHead(200);
     res.end("Astra-Prime is LIVE");
-}).listen(process.env.PORT || 3000);
+});
+
+server.listen(process.env.PORT || 3000);
