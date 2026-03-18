@@ -1,7 +1,6 @@
 {
   "name": "sentinel-core",
   "version": "1.0.0",
-  "description": "",
   "main": "client.ts",
   "scripts": {
     "start": "ts-node client.ts",
