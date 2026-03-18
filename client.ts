@@ -3,7 +3,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import http from "http";
 
 const SOLANA_CONNECTION = new Connection("https://api.mainnet-beta.solana.com");
-const MY_WALLET = new PublicKey("J5MxnG7Z66yS1S7G6... (pune adresa ta intreaga aici)");
+const MY_WALLET = new PublicKey("J5MxnG7Z66yS1S7G6X58661zN532V835n8474937"); 
 const REQUIRED_AMOUNT = 0.15;
 
 const baseOpenai = new OpenAI({
@@ -13,10 +13,9 @@ const baseOpenai = new OpenAI({
 export const openai = {
     chat: {
         completions: {
-            create: async (params: any): Promise<any> => {
+            create: async (params: any) => {
                 const signatures = await SOLANA_CONNECTION.getSignaturesForAddress(MY_WALLET, { limit: 10 });
                 let paid = false;
-
                 for (const sig of signatures) {
                     const tx = await SOLANA_CONNECTION.getTransaction(sig.signature, {
                         commitment: "confirmed",
@@ -27,11 +26,7 @@ export const openai = {
                         break;
                     }
                 }
-
-                if (!paid) {
-                    throw new Error("ACCESS_DENIED");
-                }
-
+                if (!paid) throw new Error("ACCESS_DENIED");
                 return baseOpenai.chat.completions.create(params);
             }
         }
@@ -42,4 +37,3 @@ http.createServer((req, res) => {
     res.writeHead(200);
     res.end("Astra-Prime is LIVE");
 }).listen(process.env.PORT || 3000);
-
