@@ -1,8 +1,17 @@
 {
   "name": "sentinel-core",
   "version": "1.0.0",
+  "description": "",
+  "main": "client.ts",
+  "scripts": {
+    "start": "ts-node client.ts",
+    "build": "npm install"
+  },
   "dependencies": {
+    "@solana/web3.js": "^1.91.1",
     "openai": "^4.28.0",
-    "@solana/web3.js": "^1.90.0"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.24"
   }
 }
