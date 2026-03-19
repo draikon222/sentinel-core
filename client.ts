@@ -1,54 +1,14 @@
-import OpenAI from "openai";
-import { Connection, PublicKey } from "@solana/web3.js";
-import http from "http";
+import express from 'express';
+import path from 'path';
 
-const SOLANA_CONNECTION = new Connection("https://api.mainnet-beta.solana.com");
-const MY_WALLET = new PublicKey("J5MxnGsFa79EeQS6kAMcGLTK3kXXvC39TjEhj7BkD6bk");
-const REQUIRED_AMOUNT = 0.15;
+const app = express();
+const port = process.env.PORT || 3000;
 
-const baseOpenai = new OpenAI({
-    apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+// Această linie trimite fișierul tău HTML nou creat către vizitatori
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html')); 
 });
 
-async function testWallet() {
-    try {
-        const signatures = await SOLANA_CONNECTION.getSignaturesForAddress(MY_WALLET, { limit: 1 });
-        console.log("-----------------------------------------");
-        console.log("TEST PORTOFEL: Conexiune activa!");
-        console.log("Botul scaneaza adresa: " + MY_WALLET.toBase58());
-        console.log("-----------------------------------------");
-    } catch (err) {
-        console.log("EROARE TEST: " + err);
-    }
-}
-testWallet();
-
-export const openai = {
-    chat: {
-        completions: {
-            create: async (params: any) => {
-                const signatures = await SOLANA_CONNECTION.getSignaturesForAddress(MY_WALLET, { limit: 10 });
-                let paid = false;
-                for (const sig of signatures) {
-                    const tx = await SOLANA_CONNECTION.getTransaction(sig.signature, {
-                        commitment: "confirmed",
-                        maxSupportedTransactionVersion: 0
-                    });
-                    if (tx && (tx.meta?.postBalances[1]! - tx.meta?.preBalances[1]!) / 1e9 >= REQUIRED_AMOUNT) {
-                        paid = true;
-                        break;
-                    }
-                }
-                if (!paid) throw new Error("ACCESS_DENIED");
-                return baseOpenai.chat.completions.create(params);
-            }
-        }
-    }
-};
-
-const server = http.createServer((req, res) => {
-    res.writeHead(200);
-    res.end("Astra-Prime is LIVE");
+app.listen(port, () => {
+  console.log(`Sentinel Core operational pe portul ${port}`);
 });
-
-server.listen(process.env.PORT || 3000);
