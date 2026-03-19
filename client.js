@@ -13,23 +13,28 @@ app.get('/', (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <title>SENTINEL CORE | Restricted</title>
         <style>
-            body { background-color: #030a11; color: #a1b0c0; font-family: 'Courier New', monospace; margin: 0; padding: 0; text-transform: uppercase; overflow: hidden; }
+            body { background-color: #030a11; color: #a1b0c0; font-family: 'Courier New', monospace; margin: 0; padding: 0; text-transform: uppercase; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
             #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #030a11; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
             .login-box { width: 85%; max-width: 350px; text-align: center; border: 1px solid #1a2a3a; padding: 30px; background: #05101a; box-shadow: 0 0 20px rgba(0,210,255,0.1); position: relative; }
             .input-container { position: relative; margin-bottom: 20px; width: 100%; }
             input { background: #02080e; border: 1px solid #1a2a3a; color: #00ff88; padding: 12px; width: 100%; box-sizing: border-box; text-align: center; font-family: inherit; outline: none; font-size: 1rem; border-radius: 4px; }
             .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #00d2ff; font-size: 1.2rem; z-index: 10; }
             .btn-login { background: #00ff88; color: #000; border: none; padding: 15px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-            #main-interface { display: none; padding: 15px; height: 100vh; display: flex; flex-direction: column; }
+            
+            #main-interface { display: none; padding: 15px; flex-grow: 1; flex-direction: column; }
             header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a2a3a; padding-bottom: 10px; margin-bottom: 20px; }
             .card { background: #05101a; border: 1px solid #1a2a3a; padding: 15px; margin-bottom: 10px; border-left: 3px solid #00d2ff; }
             .tax-card { border-left: 3px solid #00ff88; }
             .value { font-size: 2rem; color: #ffffff; margin: 5px 0; }
             .tax-value { color: #00ff88; }
-            .logs-container { background: #02080e; border: 1px solid #1a2a3a; padding: 10px; height: 120px; font-size: 0.7rem; color: #506070; overflow: hidden; margin-bottom: 20px; }
-            .withdraw-section { position: fixed; bottom: 0; left: 0; width: 100%; background: #05101a; border-top: 1px solid #1a2a3a; padding: 15px; box-sizing: border-box; }
+            .logs-container { background: #02080e; border: 1px solid #1a2a3a; padding: 10px; height: 110px; font-size: 0.7rem; color: #506070; overflow: hidden; margin-bottom: 10px; }
+            
+            .withdraw-section { background: #05101a; border-top: 1px solid #1a2a3a; padding: 15px; box-sizing: border-box; }
             .wallet-input { background: #02080e; border: 1px solid #00d2ff; color: #fff; padding: 12px; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 0.8rem; margin-bottom: 10px; text-align: left; text-transform: none; }
             .withdraw-btn { background: #00ff88; color: #000; border: none; padding: 15px; width: 100%; font-weight: 900; font-size: 1rem; cursor: pointer; text-transform: uppercase; }
+            
+            /* CLAUZA DE PROTECTIE */
+            .disclaimer { font-size: 0.5rem; color: #304050; text-align: center; padding: 5px; text-transform: none; line-height: 1.2; }
         </style>
     </head>
     <body>
@@ -44,9 +49,10 @@ app.get('/', (req, res) => {
                 <button class="btn-login" onclick="validate()">INITIALIZE NODES</button>
                 <div id="err" style="color:#ff4444; font-size:0.7rem; margin-top:15px;"></div>
             </div>
+            <div class="disclaimer" style="position:absolute; bottom:10px;">Simulation software for educational purposes only. No real assets are generated.</div>
         </div>
 
-        <div id="main-interface" style="display:none;">
+        <div id="main-interface">
             <header>
                 <div style="color:#fff; font-weight:bold;">🛡️ SENTINEL V1.0</div>
                 <div style="color:#00d2ff; font-size:0.7rem;">ONLINE</div>
@@ -62,6 +68,9 @@ app.get('/', (req, res) => {
                 <div style="font-size:0.6rem; color:#a1b0c0; margin-bottom:5px;">RECIPIENT WALLET ADDRESS (SOL):</div>
                 <input type="text" class="wallet-input" id="wallet-addr" placeholder="ex: 7xKX...j9pL" autocomplete="off">
                 <button class="withdraw-btn" id="w-btn" onclick="runWithdraw()">Confirm Withdrawal</button>
+            </div>
+            <div class="disclaimer">
+                Sentinel Core is a blockchain visualizer simulation. Intercepted values are simulated for demonstration.
             </div>
         </div>
 
@@ -93,8 +102,8 @@ app.get('/', (req, res) => {
                     const logMsg = document.createElement('div');
                     logMsg.innerHTML = "> NODE " + Math.floor(Math.random()*999) + ": VALIDATED (+" + increment.toFixed(3) + ")";
                     logEl.prepend(logMsg);
-                    if(logEl.children.length > 6) logEl.lastChild.remove();
-                }, 6000); // TIMP CRESCUT LA 6 SECUNDE
+                    if(logEl.children.length > 5) logEl.lastChild.remove();
+                }, 6000);
             }
             function runWithdraw() {
                 const addr = document.getElementById('wallet-addr').value;
@@ -120,4 +129,4 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.listen(port, () => console.log('Sentinel Pro Live'));
+app.listen(port, () => console.log('Sentinel Live'));
