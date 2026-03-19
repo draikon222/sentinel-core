@@ -19,15 +19,15 @@ app.get('/', (req, res) => {
             .status-bar { font-size: 0.8rem; margin-bottom: 15px; color: #00ff88; }
             
             .card { background: #05101a; border: 1px solid #1a2a3a; padding: 15px; margin-bottom: 10px; border-left: 3px solid #00d2ff; }
-            .tax-card { border-left: 3px solid #00ff88; }
+            .tax-card { border-left: 3px solid #00ff88; position: relative; }
             .label { font-size: 0.7rem; color: #00d2ff; display: flex; justify-content: space-between; }
-            .value { font-size: 2.2rem; color: #ffffff; margin: 5px 0; }
-            .tax-value { color: #00ff88; }
+            .value { font-size: 2.2rem; color: #ffffff; margin: 5px 0; transition: all 0.2s; }
+            .tax-value { color: #00ff88; text-shadow: 0 0 5px rgba(0,255,136,0.2); }
+            .bump { transform: scale(1.05); color: #fff; }
 
-            /* LOGS SECTION */
-            .logs-container { background: #02080e; border: 1px solid #1a2a3a; padding: 10px; height: 150px; overflow-y: hidden; font-size: 0.7rem; color: #506070; }
-            .log-entry { margin-bottom: 5px; border-bottom: 1px solid #05101a; padding-bottom: 2px; }
-            .log-entry span { color: #00ff88; }
+            .logs-container { background: #02080e; border: 1px solid #1a2a3a; padding: 10px; height: 180px; overflow-y: hidden; font-size: 0.7rem; color: #506070; }
+            .log-entry { margin-bottom: 5px; border-bottom: 1px solid #05101a; padding-bottom: 2px; animation: fadeIn 0.3s forwards; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
         </style>
     </head>
     <body>
@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 
         <div class="card tax-card">
             <div class="label">DIPLOMATIC TAXES COLLECTED 💰</div>
-            <div class="value tax-value">0.00 <span style="font-size:0.8rem">SOL</span></div>
+            <div class="value tax-value" id="sol-balance">0.00 <span style="font-size:0.8rem">SOL</span></div>
         </div>
 
         <div class="card">
@@ -51,32 +51,44 @@ app.get('/', (req, res) => {
         <div style="font-size:0.7rem; color:#00d2ff; margin: 15px 0 5px 0;">LIVE_SYSTEM_LOGS:</div>
         <div class="logs-container" id="logs">
             <div class="log-entry">> Initializing Sentinel Core...</div>
-            <div class="log-entry">> Astra-Prime Gateway connected.</div>
-            <div class="log-entry">> Scanning for diplomatic opportunities...</div>
         </div>
 
         <script>
+            let currentBalance = 0.00;
+            const balanceEl = document.getElementById('sol-balance');
             const logs = document.getElementById('logs');
+            
             const messages = [
-                "Negotiating with External_Node_88...",
-                "Diplomatic tax applied: +0.02 SOL",
-                "Entity #4 status: OPTIMAL",
-                "Asset secured via Astra-Prime.",
-                "Tax collection successful.",
-                "Bypassing standard protocols..."
+                { txt: "Negotiating with Node_0x71...", val: 0 },
+                { txt: "Astra-Prime tax intercepted: +0.03 SOL", val: 0.03 },
+                { txt: "Diplomatic handshake confirmed.", val: 0.01 },
+                { txt: "Bypassing relay security...", val: 0 },
+                { txt: "New asset identified by Sentinel.", val: 0 },
+                { txt: "Inbound fee collected: +0.06 SOL", val: 0.06 }
             ];
 
-            setInterval(() => {
+            function addLog() {
+                const pick = messages[Math.floor(Math.random() * messages.length)];
                 const div = document.createElement('div');
                 div.className = 'log-entry';
-                div.innerHTML = '> ' + messages[Math.floor(Math.random() * messages.length)];
+                div.innerHTML = '> ' + pick.txt;
                 logs.prepend(div);
-                if(logs.children.length > 8) logs.lastChild.remove();
-            }, 4000);
+                
+                if(pick.val > 0) {
+                    currentBalance += pick.val;
+                    balanceEl.innerHTML = currentBalance.toFixed(2) + ' <span style="font-size:0.8rem">SOL</span>';
+                    balanceEl.classList.add('bump');
+                    setTimeout(() => balanceEl.classList.remove('bump'), 200);
+                }
+
+                if(logs.children.length > 10) logs.lastChild.remove();
+            }
+
+            setInterval(addLog, 4500); // Adaugă un log și updatează banii la fiecare 4.5 secunde
         </script>
     </body>
     </html>
   `);
 });
 
-app.listen(port, () => { console.log('Final Build Live'); });
+app.listen(port, () => { console.log('Aggressive Build Live'); });
