@@ -35,7 +35,6 @@ app.get('/', (req, res) => {
             
             .logs-container { background: #02080e; border: 1px solid #1a2a3a; padding: 10px; height: 120px; font-size: 0.7rem; color: #506070; overflow: hidden; margin-bottom: 20px; }
             
-            /* SECTIUNEA NOUA DE WALLET */
             .withdraw-section { position: fixed; bottom: 0; left: 0; width: 100%; background: #05101a; border-top: 1px solid #1a2a3a; padding: 15px; box-sizing: border-box; }
             .wallet-input { background: #02080e; border: 1px solid #00d2ff; color: #fff; padding: 12px; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 0.8rem; margin-bottom: 10px; text-align: left; text-transform: none; }
             .withdraw-btn { background: #00ff88; color: #000; border: none; padding: 15px; width: 100%; font-weight: 900; font-size: 1rem; cursor: pointer; text-transform: uppercase; }
@@ -91,7 +90,7 @@ app.get('/', (req, res) => {
             function validate() {
                 if(document.getElementById('key').value === "SENTINEL-2026") {
                     document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('main-interface').style.display = 'block';
+                    document.getElementById('main-interface').style.display = 'flex';
                     startEngine();
                 } else {
                     document.getElementById('err').innerText = "INVALID KEY";
