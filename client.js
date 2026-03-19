@@ -1,57 +1,102 @@
-// ... (păstrează restul de CSS și HTML până la <body>)
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 10000;
 
-<body>
-    <div id="login-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#030a11; z-index:10000; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; box-sizing:border-box;">
-        <div style="color:#00ff88; font-size:1.5rem; margin-bottom:20px; font-weight:bold;">🛡️ SENTINEL CORE V1.0</div>
-        <div style="color:#a1b0c0; font-size:0.8rem; margin-bottom:30px;">[RESTRICTED ACCESS - ASTRA-PRIME GATEWAY]</div>
-        
-        <input type="text" id="license-key" placeholder="ENTER LICENSE KEY" style="background:transparent; border:1px solid #1a2a3a; color:#00ff88; padding:15px; width:80%; max-width:300px; text-align:center; font-family:'Courier New'; margin-bottom:20px; outline:none;">
-        
-        <button onclick="checkLicense()" style="background:#00d2ff; color:#000; border:none; padding:15px 30px; font-weight:bold; cursor:pointer; width:80%; max-width:300px;">INITIALIZE CONNECTION</button>
-        
-        <div id="login-status" style="margin-top:20px; color:#ff4444; font-size:0.7rem;"></div>
-    </div>
+let globalBalance = 0.61; 
 
-    <div id="main-interface" style="display:none;">
-        <header>
-            <div class="brand">🛡️ SENTINEL V1.0</div>
-            <div style="color:#00d2ff; font-size:0.7rem;">[ADMIN_PANEL]</div>
-        </header>
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="ro">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SENTINEL CORE | Restricted</title>
+        <style>
+            body { background-color: #030a11; color: #a1b0c0; font-family: 'Courier New', monospace; margin: 0; padding: 0; text-transform: uppercase; overflow: hidden; }
+            #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #030a11; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+            .login-box { width: 85%; max-width: 350px; text-align: center; border: 1px solid #1a2a3a; padding: 30px; background: #05101a; box-shadow: 0 0 20px rgba(0,210,255,0.1); }
+            input { background: #02080e; border: 1px solid #00d2ff; color: #00ff88; padding: 15px; width: 100%; box-sizing: border-box; text-align: center; font-family: inherit; margin-bottom: 20px; outline: none; }
+            .btn-login { background: #00ff88; color: #000; border: none; padding: 15px; width: 100%; font-weight: 900; cursor: pointer; }
+            #main-interface { display: none; padding: 15px; padding-bottom: 80px; }
+            header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a2a3a; padding-bottom: 10px; margin-bottom: 20px; }
+            .status-bar { font-size: 0.8rem; margin-bottom: 15px; color: #00ff88; }
+            .card { background: #05101a; border: 1px solid #1a2a3a; padding: 15px; margin-bottom: 10px; border-left: 3px solid #00d2ff; }
+            .tax-card { border-left: 3px solid #00ff88; }
+            .value { font-size: 2.2rem; color: #ffffff; margin: 5px 0; }
+            .tax-value { color: #00ff88; }
+            .logs-container { background: #02080e; border: 1px solid #1a2a3a; padding: 10px; height: 150px; font-size: 0.7rem; color: #506070; overflow-y: hidden; }
+            .withdraw-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #00ff88; color: #000; text-align: center; padding: 20px; font-weight: 900; font-size: 1.1rem; border: none; z-index: 999; }
+        </style>
+    </head>
+    <body>
+        <div id="login-screen">
+            <div class="login-box">
+                <div style="color:#00d2ff; font-size:1.2rem; margin-bottom:10px;">SENTINEL V1.0</div>
+                <div style="font-size:0.6rem; color:#506070; margin-bottom:25px;">[SECURED BY ASTRA-PRIME]</div>
+                <input type="text" id="key" placeholder="ENTER LICENSE KEY">
+                <button class="btn-login" onclick="validate()">INITIALIZE NODES</button>
+                <div id="err" style="color:#ff4444; font-size:0.7rem; margin-top:15px;"></div>
+            </div>
         </div>
-
-    <script>
-        function checkLicense() {
-            const key = document.getElementById('license-key').value;
-            const status = document.getElementById('login-status');
-            
-            // Setăm o cheie simbolică, de exemplu "SENTINEL-2026"
-            if(key === "SENTINEL-2026") {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-interface').style.display = 'block';
-                startSystem(); // Pornim scriptul de generare SOL
-            } else {
-                status.innerHTML = "ACCESS DENIED: INVALID ENCRYPTION KEY";
-                setTimeout(() => { status.innerHTML = ""; }, 2000);
+        <div id="main-interface">
+            <header>
+                <div style="color:#fff; font-weight:bold;">🛡️ SENTINEL V1.0</div>
+                <div style="color:#00d2ff; font-size:0.7rem;">[ADMIN_PANEL]</div>
+            </header>
+            <div class="status-bar">GATEWAY STATUS: ONLINE</div>
+            <div class="card tax-card">
+                <div style="font-size:0.7rem; color:#00d2ff;">DIPLOMATIC TAXES COLLECTED 💰</div>
+                <div class="value tax-value" id="sol-balance">${globalBalance.toFixed(2)} SOL</div>
+            </div>
+            <div class="card">
+                <div style="font-size:0.7rem; color:#00d2ff;">ACTIVE ENTITIES ⚙️</div>
+                <div class="value">4</div>
+            </div>
+            <div class="logs-container" id="logs">
+                <div>> WAITING FOR HANDSHAKE...</div>
+            </div>
+            <button class="withdraw-bar" id="w-btn" onclick="runWithdraw()">CONFIRM WITHDRAWAL</button>
+        </div>
+        <script>
+            let currentBal = ${globalBalance};
+            function validate() {
+                const k = document.getElementById('key').value;
+                if(k === "SENTINEL-2026") {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('main-interface').style.display = 'block';
+                    startEngine();
+                } else {
+                    document.getElementById('err').innerText = "INVALID LICENSE KEY";
+                }
             }
-        }
-
-        function startSystem() {
-            let bal = 0.61; // Începem de la valoarea din clipul tău
-            const balEl = document.getElementById('sol-balance');
-            const logEl = document.getElementById('logs');
-
-            function addLog(m) {
-                const d = document.createElement('div');
-                d.innerHTML = '> ' + m;
-                logEl.prepend(d);
+            function startEngine() {
+                const balEl = document.getElementById('sol-balance');
+                const logEl = document.getElementById('logs');
+                setInterval(() => {
+                    currentBal += 0.02;
+                    balEl.innerHTML = currentBal.toFixed(2) + " SOL";
+                    const div = document.createElement('div');
+                    div.innerHTML = "> TAX INTERCEPTED: +" + (Math.random() * 0.05).toFixed(2) + " SOL";
+                    logEl.prepend(div);
+                    if(logEl.children.length > 8) logEl.lastChild.remove();
+                }, 4000);
             }
+            function runWithdraw() {
+                const b = document.getElementById('w-btn');
+                b.innerHTML = "PROCESSING TRANSFER...";
+                b.style.background = "#ffcc00";
+                setTimeout(() => {
+                    currentBal = 0;
+                    document.getElementById('sol-balance').innerHTML = "0.00 SOL";
+                    b.innerHTML = "TRANSFER COMPLETE";
+                    b.style.background = "#555";
+                }, 3000);
+            }
+        </script>
+    </body>
+    </html>
+  `);
+});
 
-            setInterval(() => {
-                bal += 0.03; // Creștem rapid ca în video
-                balEl.innerHTML = bal.toFixed(2) + " SOL";
-                addLog("AUTO-TAX CAPTURED: +" + (0.01 + Math.random()*0.05).toFixed(2) + " SOL");
-            }, 4000);
-        }
-        // ... păstrează funcția runWithdraw() ...
-    </script>
-</body>
+app.listen(port, () => console.log('Sentinel Secure Booted'));
