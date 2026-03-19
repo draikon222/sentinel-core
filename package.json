@@ -1,11 +1,11 @@
 {
   "name": "sentinel-core",
   "version": "1.0.0",
-  "main": "client.ts",
+  "main": "client.js",
   "dependencies": {
     "express": "^4.18.2"
   },
   "scripts": {
-    "start": "ts-node client.ts"
+    "start": "node client.js"
   }
 }
